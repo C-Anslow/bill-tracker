@@ -1,12 +1,76 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/bank_account.dart';
 import '../models/bill_detail.dart';
+import '../models/default_bill.dart';
 
 class BillRepository {
   final SupabaseClient _supabase;
 
   BillRepository({SupabaseClient? client})
       : _supabase = client ?? Supabase.instance.client;
+
+  /// Fetches options from bill_frequency ordered by sort_order
+  Future<List<Map<String, dynamic>>> fetchFrequencies() async {
+    final response = await _supabase
+        .from('bill_frequency')
+        .select('id, frequency_description')
+        .order('sort_order', ascending: true);
+
+    return List<Map<String, dynamic>>.from(response);
+  }
+
+  /// Fetches default bills joined with bill_frequency description
+  Future<List<DefaultBill>> fetchDefaultBills() async {
+    final response = await _supabase
+        .from('default_bills')
+        .select('*, bill_frequency(frequency_description)')
+        .order('description', ascending: true);
+
+    return (response as List)
+        .map((json) => DefaultBill.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Adds a new bill template matching default_bills schema
+  Future<void> addDefaultBill({
+    required String description,
+    required double defaultAmount,
+    required DateTime startDate,
+    DateTime? endDate,
+    int? frequencyId,
+  }) async {
+    await _supabase.from('default_bills').insert({
+      'description': description,
+      'default_amount': defaultAmount,
+      'start_date': startDate.toIso8601String().split('T').first,
+      if (endDate != null)
+        'end_date': endDate.toIso8601String().split('T').first,
+      if (frequencyId != null) 'frequency_id': frequencyId,
+    });
+  }
+
+  /// Updates an existing bill template
+  Future<void> updateDefaultBill({
+    required String id,
+    required String description,
+    required double defaultAmount,
+    required DateTime startDate,
+    DateTime? endDate,
+    int? frequencyId,
+  }) async {
+    await _supabase.from('default_bills').update({
+      'description': description,
+      'default_amount': defaultAmount,
+      'start_date': startDate.toIso8601String().split('T').first,
+      'end_date': endDate?.toIso8601String().split('T').first,
+      'frequency_id': frequencyId,
+    }).eq('id', id);
+  }
+
+  /// Deletes a bill template
+  Future<void> deleteDefaultBill(String id) async {
+    await _supabase.from('default_bills').delete().eq('id', id);
+  }
 
   /// Fetches all bill headers for filtering dropdowns
   Future<List<Map<String, dynamic>>> fetchBillHeaders() async {

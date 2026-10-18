@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'bank_accounts_view.dart';
 import 'generate_schedule_view.dart';
 import 'all_bills_view.dart';
+import 'manage_templates_view.dart';
 
 class MenuView extends StatelessWidget {
   const MenuView({super.key});
@@ -95,8 +96,15 @@ class MenuView extends StatelessWidget {
                     icon: Icons.settings_suggest,
                     title: 'Manage Bill Templates',
                     subtitle: 'Configure default recurring bills, frequencies, and baseline amounts.',
-                    color: Colors.grey,
-                    onTap: null,
+                    color: Colors.purple,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ManageTemplatesView(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
