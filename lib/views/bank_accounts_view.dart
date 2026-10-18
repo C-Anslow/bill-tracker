@@ -233,9 +233,7 @@ class _BankAccountsViewState extends State<BankAccountsView> {
                         name: name,
                         amount: amount,
                         dueDate: selectedDate,
-                        headerId: _unpaidBills.isNotEmpty
-                            ? _unpaidBills.first.headerId
-                            : null,
+                        headerId: null, // Custom bills exist independently of standard schedules
                       );
                       _showSnackBar('Custom bill added!');
                       await _loadData();
