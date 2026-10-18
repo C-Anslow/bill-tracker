@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/bank_account.dart';
 import '../models/bill_detail.dart';
 import '../services/bill_repository.dart';
+import 'all_bills_view.dart';
 
 class BankAccountsView extends StatefulWidget {
   const BankAccountsView({super.key});
@@ -233,7 +234,7 @@ class _BankAccountsViewState extends State<BankAccountsView> {
                         name: name,
                         amount: amount,
                         dueDate: selectedDate,
-                        headerId: null, // Custom bills exist independently of standard schedules
+                        headerId: null, // Custom bills exist independently
                       );
                       _showSnackBar('Custom bill added!');
                       await _loadData();
@@ -350,6 +351,7 @@ class _BankAccountsViewState extends State<BankAccountsView> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // 1. Total Bank Funds
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -376,6 +378,68 @@ class _BankAccountsViewState extends State<BankAccountsView> {
                         ),
                       ],
                     ),
+
+                    // 2. Net Position Indicator (Center Tile)
+                    Builder(
+                      builder: (context) {
+                        final netDifference =
+                            _totalBalance - _totalUnpaidBills;
+                        final hasEnoughFunds = netDifference >= 0;
+                        final statusColor =
+                        hasEnoughFunds ? Colors.green : Colors.redAccent;
+
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: statusColor.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                                color: statusColor.withOpacity(0.4),
+                                width: 1.5),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                hasEnoughFunds
+                                    ? Icons.check_circle_outline
+                                    : Icons.warning_amber_rounded,
+                                color: statusColor,
+                                size: 32,
+                              ),
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    hasEnoughFunds
+                                        ? 'Sufficient Funds'
+                                        : 'Shortfall Detected',
+                                    style: TextStyle(
+                                      color: statusColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${hasEnoughFunds ? "+" : "-"}£${netDifference.abs().toStringAsFixed(2)}',
+                                    style: TextStyle(
+                                      color: statusColor,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+
+                    // 3. Unpaid Bills Total
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -467,14 +531,31 @@ class _BankAccountsViewState extends State<BankAccountsView> {
             ),
             const SizedBox(height: 32),
 
-            // --- UNPAID BILLS SECTION ---
+            // --- UNPAID BILLS SECTION HEADER ---
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Unpaid Bills (${_unpaidBills.length})',
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                    Text(
+                      'Unpaid Bills (${_unpaidBills.length})',
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(width: 12),
+                    TextButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AllBillsView(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.open_in_new, size: 18),
+                      label: const Text('View All Bills'),
+                    ),
+                  ],
                 ),
                 ElevatedButton.icon(
                   onPressed: _openAddCustomBillDialog,
@@ -492,8 +573,8 @@ class _BankAccountsViewState extends State<BankAccountsView> {
                 child: Center(
                   child: Text(
                     'No unpaid bills remaining!',
-                    style:
-                    TextStyle(color: Colors.grey, fontSize: 16),
+                    style: TextStyle(
+                        color: Colors.grey, fontSize: 16),
                   ),
                 ),
               )

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'bank_accounts_view.dart';
 import 'generate_schedule_view.dart';
+import 'all_bills_view.dart';
 
 class MenuView extends StatelessWidget {
   const MenuView({super.key});
@@ -70,7 +71,25 @@ class MenuView extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // 3. Placeholder for future expansion
+                  // 3. All Bills Explorer (NEW)
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.filter_alt,
+                    title: 'All Bills Explorer',
+                    subtitle: 'View, filter by status or schedule period, and edit all bill entries.',
+                    color: Colors.deepOrange,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AllBillsView(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 4. Placeholder for future expansion
                   _buildMenuItem(
                     context: context,
                     icon: Icons.settings_suggest,

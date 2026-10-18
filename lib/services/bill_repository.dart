@@ -8,6 +8,56 @@ class BillRepository {
   BillRepository({SupabaseClient? client})
       : _supabase = client ?? Supabase.instance.client;
 
+  /// Fetches all bill headers for filtering dropdowns
+  Future<List<Map<String, dynamic>>> fetchBillHeaders() async {
+    final response = await _supabase
+        .from('bill_header')
+        .select('id, period_name')
+        .order('created_at', ascending: false);
+
+    return List<Map<String, dynamic>>.from(response);
+  }
+
+  /// Fetches bill details with optional status and header filters
+  Future<List<BillDetail>> fetchFilteredBills({
+    required String statusFilter, // 'unpaid', 'paid', 'all'
+    String? headerIdFilter, // null for 'all'
+  }) async {
+    dynamic query = _supabase.from('bill_detail').select();
+
+    if (statusFilter == 'unpaid') {
+      query = query.eq('is_paid', false);
+    } else if (statusFilter == 'paid') {
+      query = query.eq('is_paid', true);
+    }
+
+    if (headerIdFilter != null && headerIdFilter.isNotEmpty) {
+      query = query.eq('header_id', headerIdFilter);
+    }
+
+    final response = await query.order('due_date', ascending: true);
+
+    return (response as List)
+        .map((json) => BillDetail.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Full update function for editing bill fields
+  Future<void> updateFullBillDetail({
+    required String id,
+    required String name,
+    required double amount,
+    required DateTime dueDate,
+    required bool isPaid,
+  }) async {
+    await _supabase.from('bill_detail').update({
+      'name_snapshot': name,
+      'amount_snapshot': amount,
+      'due_date': dueDate.toIso8601String().split('T').first,
+      'is_paid': isPaid,
+    }).eq('id', id);
+  }
+
   /// Calls the PL/pgSQL function to generate a schedule and return the header UUID
   Future<String> generateSchedule({
     required String periodName,
