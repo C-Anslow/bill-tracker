@@ -544,13 +544,15 @@ class _BankAccountsViewState extends State<BankAccountsView> {
                     ),
                     const SizedBox(width: 12),
                     TextButton.icon(
-                      onPressed: () {
-                        Navigator.push(
+                      onPressed: () async {
+                        await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const AllBillsView(),
                           ),
                         );
+                        // Refresh account balances and unpaid bills upon returning
+                        _loadData();
                       },
                       icon: const Icon(Icons.open_in_new, size: 18),
                       label: const Text('View All Bills'),
