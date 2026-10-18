@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dashboard_view.dart';
+import 'bank_accounts_view.dart';
 
 class MenuView extends StatelessWidget {
   const MenuView({super.key});
@@ -39,13 +39,13 @@ class MenuView extends StatelessWidget {
                     context: context,
                     icon: Icons.receipt_long,
                     title: 'Review Current Bills',
-                    subtitle: 'View account balance, generate bill schedules, and inspect detailed outgoings.',
+                    subtitle: 'View account balances, total funds, and manage account details.',
                     color: Colors.indigo,
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const DashboardView(),
+                          builder: (context) => const BankAccountsView(),
                         ),
                       );
                     },
