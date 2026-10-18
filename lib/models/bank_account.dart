@@ -12,7 +12,7 @@ class BankAccount {
   factory BankAccount.fromJson(Map<String, dynamic> json) {
     return BankAccount(
       id: json['id'] as String,
-      name: json['name'] as String,
+      name: json['account_name'] as String, // Fixed: updated from 'name' to 'account_name'
       currentBalance: (json['current_balance'] as num).toDouble(),
     );
   }
