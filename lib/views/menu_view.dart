@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'bank_accounts_view.dart';
+import 'generate_schedule_view.dart';
 
 class MenuView extends StatelessWidget {
   const MenuView({super.key});
@@ -30,16 +31,15 @@ class MenuView extends StatelessWidget {
             ),
             const SizedBox(height: 32),
 
-            // --- MENU ITEMS GRID / LIST ---
             Expanded(
               child: ListView(
                 children: [
-                  // 1. Review Current Bills (Primary Action)
+                  // 1. Review Current Bills
                   _buildMenuItem(
                     context: context,
                     icon: Icons.receipt_long,
                     title: 'Review Current Bills',
-                    subtitle: 'View account balances, total funds, and manage account details.',
+                    subtitle: 'View account balances, unpaid bills, and manage details.',
                     color: Colors.indigo,
                     onTap: () {
                       Navigator.push(
@@ -52,14 +52,32 @@ class MenuView extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Placeholder item for future expansion
+                  // 2. Generate Schedule
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.auto_awesome,
+                    title: 'Generate Bill Schedule',
+                    subtitle: 'Select dates and create a new set of projected bills using database templates.',
+                    color: Colors.teal,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const GenerateScheduleView(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 3. Placeholder for future expansion
                   _buildMenuItem(
                     context: context,
                     icon: Icons.settings_suggest,
                     title: 'Manage Bill Templates',
                     subtitle: 'Configure default recurring bills, frequencies, and baseline amounts.',
                     color: Colors.grey,
-                    onTap: null, // Disabled until implemented
+                    onTap: null,
                   ),
                 ],
               ),
