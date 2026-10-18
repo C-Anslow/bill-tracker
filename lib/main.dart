@@ -1,6 +1,7 @@
 // url: 'https://axarumiwsfaiydrhnsqm.supabase.co',
 // publishableKey: 'sb_publishable_17Zrz8q7f4D0dULHieSjyQ_ASByHgSz',
 
+import 'views/menu_view.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'views/dashboard_view.dart';
@@ -35,7 +36,7 @@ class BillTrackerApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       themeMode: ThemeMode.system,
-      home: const DashboardView(),
+      home: const MenuView(),
     );
   }
 }
