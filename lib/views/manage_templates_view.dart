@@ -270,11 +270,10 @@ class _ManageTemplatesViewState extends State<ManageTemplatesView> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
-        padding: const EdgeInsets.all(16.0), // Reduced padding for mobile
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Replaced Row with Wrap for responsive layout
             Wrap(
               alignment: WrapAlignment.spaceBetween,
               crossAxisAlignment: WrapCrossAlignment.center,
@@ -315,40 +314,101 @@ class _ManageTemplatesViewState extends State<ManageTemplatesView> {
                         .first;
                     final freqStr = template.frequencyDescription ?? 'Custom';
 
-                    return ListTile(
-                      leading: const CircleAvatar(
-                        child: Icon(Icons.receipt),
-                      ),
-                      title: Text(
-                        template.description,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Text(
-                          'Frequency: $freqStr | Active from: $startStr'),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 12.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '£${template.defaultAmount.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                          const CircleAvatar(
+                            radius: 20,
+                            child: Icon(Icons.receipt, size: 20),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        template.description,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight:
+                                          FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '£${template.defaultAmount.toStringAsFixed(2)}',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        '$freqStr • From $startStr',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.edit,
+                                              size: 20),
+                                          onPressed: () =>
+                                              _openTemplateDialog(
+                                                  template),
+                                          tooltip: 'Edit Template',
+                                          visualDensity:
+                                          VisualDensity.compact,
+                                          padding: EdgeInsets.zero,
+                                          constraints:
+                                          const BoxConstraints(),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        IconButton(
+                                          icon: const Icon(
+                                              Icons.delete_outline,
+                                              size: 20,
+                                              color:
+                                              Colors.redAccent),
+                                          onPressed: () =>
+                                              _deleteTemplate(
+                                                  template),
+                                          tooltip: 'Delete Template',
+                                          visualDensity:
+                                          VisualDensity.compact,
+                                          padding: EdgeInsets.zero,
+                                          constraints:
+                                          const BoxConstraints(),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(Icons.edit, size: 20),
-                            onPressed: () =>
-                                _openTemplateDialog(template),
-                            tooltip: 'Edit Template',
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline,
-                                size: 20, color: Colors.redAccent),
-                            onPressed: () =>
-                                _deleteTemplate(template),
-                            tooltip: 'Delete Template',
                           ),
                         ],
                       ),
