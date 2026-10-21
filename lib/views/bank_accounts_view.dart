@@ -16,7 +16,7 @@ class _BankAccountsViewState extends State<BankAccountsView> {
   List<BankAccount> _accounts = [];
   List<BillDetail> _unpaidBills = [];
   bool _isLoading = false;
-  String _searchQuery = ''; // Added state for the search filter
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -52,7 +52,6 @@ class _BankAccountsViewState extends State<BankAccountsView> {
     return _unpaidBills.fold(0.0, (sum, bill) => sum + bill.amountSnapshot);
   }
 
-  // Added getter to compute the filtered bills dynamically
   List<BillDetail> get _filteredBills {
     if (_searchQuery.isEmpty) {
       return _unpaidBills;
@@ -350,7 +349,7 @@ class _BankAccountsViewState extends State<BankAccountsView> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -358,39 +357,71 @@ class _BankAccountsViewState extends State<BankAccountsView> {
             Card(
               color: Theme.of(context).colorScheme.primaryContainer,
               child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // 1. Total Bank Funds
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Total Bank Funds',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer
-                                .withOpacity(0.8),
-                          ),
+                        // 1. Total Bank Funds
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Bank Funds',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer
+                                    .withOpacity(0.8),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '£${_totalBalance.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '£${_totalBalance.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
-                          ),
+
+                        // 2. Unpaid Bills Total
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Unpaid Bills',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer
+                                    .withOpacity(0.8),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '£${_totalUnpaidBills.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.amber,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
+                    const SizedBox(height: 16),
 
-                    // 2. Net Position Indicator (Center Tile)
+                    // 3. Net Position Indicator
                     Builder(
                       builder: (context) {
                         final netDifference =
@@ -402,7 +433,7 @@ class _BankAccountsViewState extends State<BankAccountsView> {
 
                         return Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
+                              horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
                             color: statusColor.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(12),
@@ -411,13 +442,14 @@ class _BankAccountsViewState extends State<BankAccountsView> {
                                 width: 1.5),
                           ),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
                                 hasEnoughFunds
                                     ? Icons.check_circle_outline
                                     : Icons.warning_amber_rounded,
                                 color: statusColor,
-                                size: 32,
+                                size: 28,
                               ),
                               const SizedBox(width: 12),
                               Column(
@@ -449,32 +481,6 @@ class _BankAccountsViewState extends State<BankAccountsView> {
                           ),
                         );
                       },
-                    ),
-
-                    // 3. Unpaid Bills Total
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          'Unpaid Bills Total',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer
-                                .withOpacity(0.8),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '£${_totalUnpaidBills.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.amber,
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),
@@ -544,19 +550,21 @@ class _BankAccountsViewState extends State<BankAccountsView> {
             const SizedBox(height: 32),
 
             // --- UNPAID BILLS SECTION HEADER ---
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 12,
+              runSpacing: 12,
               children: [
-                Row(
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 12,
                   children: [
                     Text(
-                      // Note: Updated to reflect filtered amount if desired,
-                      // but usually it's better to show the full amount or filtered amount.
                       'Unpaid Bills (${_filteredBills.length})',
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(width: 12),
                     TextButton.icon(
                       onPressed: () async {
                         await Navigator.push(
@@ -565,11 +573,10 @@ class _BankAccountsViewState extends State<BankAccountsView> {
                             builder: (context) => const AllBillsView(),
                           ),
                         );
-                        // Refresh account balances and unpaid bills upon returning
                         _loadData();
                       },
                       icon: const Icon(Icons.open_in_new, size: 18),
-                      label: const Text('View All Bills'),
+                      label: const Text('View All'),
                     ),
                   ],
                 ),
@@ -582,7 +589,7 @@ class _BankAccountsViewState extends State<BankAccountsView> {
             ),
             const SizedBox(height: 12),
 
-            // Added Search TextField
+            // Search TextField
             TextField(
               decoration: const InputDecoration(
                 labelText: 'Filter Bills by Name',
@@ -604,6 +611,7 @@ class _BankAccountsViewState extends State<BankAccountsView> {
                 child: Center(
                   child: Text(
                     'No bills match your search or no unpaid bills remaining!',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.grey, fontSize: 16),
                   ),
