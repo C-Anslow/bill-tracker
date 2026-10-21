@@ -16,6 +16,7 @@ class _BankAccountsViewState extends State<BankAccountsView> {
   List<BankAccount> _accounts = [];
   List<BillDetail> _unpaidBills = [];
   bool _isLoading = false;
+  String _searchQuery = ''; // Added state for the search filter
 
   @override
   void initState() {
@@ -49,6 +50,16 @@ class _BankAccountsViewState extends State<BankAccountsView> {
 
   double get _totalUnpaidBills {
     return _unpaidBills.fold(0.0, (sum, bill) => sum + bill.amountSnapshot);
+  }
+
+  // Added getter to compute the filtered bills dynamically
+  List<BillDetail> get _filteredBills {
+    if (_searchQuery.isEmpty) {
+      return _unpaidBills;
+    }
+    return _unpaidBills.where((bill) {
+      return bill.nameSnapshot.toLowerCase().contains(_searchQuery.toLowerCase());
+    }).toList();
   }
 
   void _showSnackBar(String message) {
@@ -385,8 +396,9 @@ class _BankAccountsViewState extends State<BankAccountsView> {
                         final netDifference =
                             _totalBalance - _totalUnpaidBills;
                         final hasEnoughFunds = netDifference >= 0;
-                        final statusColor =
-                        hasEnoughFunds ? Colors.green : Colors.redAccent;
+                        final statusColor = hasEnoughFunds
+                            ? Colors.green
+                            : Colors.redAccent;
 
                         return Container(
                           padding: const EdgeInsets.symmetric(
@@ -538,7 +550,9 @@ class _BankAccountsViewState extends State<BankAccountsView> {
                 Row(
                   children: [
                     Text(
-                      'Unpaid Bills (${_unpaidBills.length})',
+                      // Note: Updated to reflect filtered amount if desired,
+                      // but usually it's better to show the full amount or filtered amount.
+                      'Unpaid Bills (${_filteredBills.length})',
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold),
                     ),
@@ -568,13 +582,28 @@ class _BankAccountsViewState extends State<BankAccountsView> {
             ),
             const SizedBox(height: 12),
 
+            // Added Search TextField
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Filter Bills by Name',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
+            ),
+            const SizedBox(height: 12),
+
             Card(
-              child: _unpaidBills.isEmpty
+              child: _filteredBills.isEmpty
                   ? const Padding(
                 padding: EdgeInsets.all(32.0),
                 child: Center(
                   child: Text(
-                    'No unpaid bills remaining!',
+                    'No bills match your search or no unpaid bills remaining!',
                     style: TextStyle(
                         color: Colors.grey, fontSize: 16),
                   ),
@@ -583,11 +612,11 @@ class _BankAccountsViewState extends State<BankAccountsView> {
                   : ListView.separated(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: _unpaidBills.length,
+                itemCount: _filteredBills.length,
                 separatorBuilder: (context, index) =>
                 const Divider(height: 1),
                 itemBuilder: (context, index) {
-                  final bill = _unpaidBills[index];
+                  final bill = _filteredBills[index];
                   final dateStr = bill.dueDate
                       .toIso8601String()
                       .split('T')
