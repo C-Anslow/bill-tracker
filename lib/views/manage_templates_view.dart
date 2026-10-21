@@ -143,7 +143,8 @@ class _ManageTemplatesViewState extends State<ManageTemplatesView> {
                           if (endDate != null)
                             IconButton(
                               icon: const Icon(Icons.clear, size: 18),
-                              onPressed: () => setDialogState(() => endDate = null),
+                              onPressed: () =>
+                                  setDialogState(() => endDate = null),
                             ),
                           const Icon(Icons.calendar_today),
                         ],
@@ -151,7 +152,8 @@ class _ManageTemplatesViewState extends State<ManageTemplatesView> {
                       onTap: () async {
                         final picked = await showDatePicker(
                           context: context,
-                          initialDate: endDate ?? startDate.add(const Duration(days: 365)),
+                          initialDate: endDate ??
+                              startDate.add(const Duration(days: 365)),
                           firstDate: startDate,
                           lastDate: DateTime(2030),
                         );
@@ -175,7 +177,8 @@ class _ManageTemplatesViewState extends State<ManageTemplatesView> {
                     double.tryParse(amountController.text.trim());
 
                     if (description.isEmpty || amount == null) {
-                      _showSnackBar('Please enter a valid description and amount');
+                      _showSnackBar(
+                          'Please enter a valid description and amount');
                       return;
                     }
 
@@ -267,12 +270,16 @@ class _ManageTemplatesViewState extends State<ManageTemplatesView> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(16.0), // Reduced padding for mobile
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // Replaced Row with Wrap for responsive layout
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 12,
+              runSpacing: 12,
               children: [
                 Text(
                   'Recurring Bill Templates (${_templates.length})',
@@ -317,7 +324,8 @@ class _ManageTemplatesViewState extends State<ManageTemplatesView> {
                         style: const TextStyle(
                             fontWeight: FontWeight.w600),
                       ),
-                      subtitle: Text('Frequency: $freqStr | Active from: $startStr'),
+                      subtitle: Text(
+                          'Frequency: $freqStr | Active from: $startStr'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

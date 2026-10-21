@@ -193,7 +193,7 @@ class _AllBillsViewState extends State<AllBillsView> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(16.0), // Reduced padding for mobile
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -201,66 +201,68 @@ class _AllBillsViewState extends State<AllBillsView> {
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Row(
+                child: Column( // Changed from Row to Column for mobile responsiveness
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // 1. Status Segmented Toggle
-                    SegmentedButton<String>(
-                      segments: const [
-                        ButtonSegment(
-                          value: 'all',
-                          label: Text('Both'),
-                          icon: Icon(Icons.list),
-                        ),
-                        ButtonSegment(
-                          value: 'unpaid',
-                          label: Text('Unpaid'),
-                          icon: Icon(Icons.pending_actions),
-                        ),
-                        ButtonSegment(
-                          value: 'paid',
-                          label: Text('Paid'),
-                          icon: Icon(Icons.task_alt),
-                        ),
-                      ],
-                      selected: {_statusFilter},
-                      onSelectionChanged: (newSelection) {
-                        setState(() {
-                          _statusFilter = newSelection.first;
-                        });
-                        _fetchBills();
-                      },
-                    ),
-                    const SizedBox(width: 24),
-
-                    // 2. Schedule Header Title Dropdown
-                    Expanded(
-                      child: DropdownButtonFormField<String?>(
-                        value: _selectedHeaderId,
-                        decoration: const InputDecoration(
-                          labelText: 'Filter by Schedule Period',
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                        ),
-                        items: [
-                          const DropdownMenuItem<String?>(
-                            value: null,
-                            child: Text('Show All Periods'),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SegmentedButton<String>(
+                        segments: const [
+                          ButtonSegment(
+                            value: 'all',
+                            label: Text('Both'),
+                            icon: Icon(Icons.list),
                           ),
-                          ..._headers.map((h) {
-                            return DropdownMenuItem<String?>(
-                              value: h['id'] as String,
-                              child: Text(h['period_name'] as String),
-                            );
-                          }),
+                          ButtonSegment(
+                            value: 'unpaid',
+                            label: Text('Unpaid'),
+                            icon: Icon(Icons.pending_actions),
+                          ),
+                          ButtonSegment(
+                            value: 'paid',
+                            label: Text('Paid'),
+                            icon: Icon(Icons.task_alt),
+                          ),
                         ],
-                        onChanged: (val) {
+                        selected: {_statusFilter},
+                        onSelectionChanged: (newSelection) {
                           setState(() {
-                            _selectedHeaderId = val;
+                            _statusFilter = newSelection.first;
                           });
                           _fetchBills();
                         },
                       ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // 2. Schedule Header Title Dropdown
+                    DropdownButtonFormField<String?>(
+                      value: _selectedHeaderId,
+                      decoration: const InputDecoration(
+                        labelText: 'Filter by Schedule Period',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                      ),
+                      items: [
+                        const DropdownMenuItem<String?>(
+                          value: null,
+                          child: Text('Show All Periods'),
+                        ),
+                        ..._headers.map((h) {
+                          return DropdownMenuItem<String?>(
+                            value: h['id'] as String,
+                            child: Text(h['period_name'] as String),
+                          );
+                        }),
+                      ],
+                      onChanged: (val) {
+                        setState(() {
+                          _selectedHeaderId = val;
+                        });
+                        _fetchBills();
+                      },
                     ),
                   ],
                 ),
