@@ -11,7 +11,8 @@ class MenuView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CMA Solutions - Bill Tracker'),
+        title: const Text('CMA Solutions - Bill Tracker'
+            ''),
         centerTitle: false,
       ),
       body: Padding(
